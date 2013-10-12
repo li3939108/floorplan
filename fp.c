@@ -153,7 +153,11 @@ FPTREE * iter_construct_tree_H(int i, FPTREE * left, FPTREE * right, MODULE * mo
 		}
 	}}
 }
-
+int iter_update_module(int x, int y, FPTREE * solution, MODULE * module_arr){
+	
+}
+int solution_cost(FPTREE * solution, MODULE * module_arr){
+}
 int main(int argc, char ** argv){
 	int i = 1;
 	FILE	*moduleFile = NULL,
