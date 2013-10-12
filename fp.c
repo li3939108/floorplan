@@ -153,10 +153,25 @@ FPTREE * iter_construct_tree_H(int i, FPTREE * left, FPTREE * right, MODULE * mo
 		}
 	}}
 }
-int iter_update_module(int x, int y, FPTREE * solution, MODULE * module_arr){
-	
+int iter_update_module(int x, int y, FPTREE * node, MODULE * module_arr){
+	switch(node->operator ){
+		case 'V':
+		iter_update_module(x, y, node->left, module_arr);
+		iter_update_module(x + node->left->width, y, node->right, module_arr);
+		break;
+		case 'H':
+		iter_update_module(x, y, node->left, module_arr);
+		iter_update_module(x, y + node->left->height, node->right, module_arr);
+		break;
+
+		default:
+		module_arr[node->node_number].x_coordinate = x ;
+		module_arr[node->node_number].y_coordinate = y ;
+		break;
+	}
 }
 int solution_cost(FPTREE * solution, MODULE * module_arr){
+	
 }
 int main(int argc, char ** argv){
 	int i = 1;
@@ -224,6 +239,7 @@ int main(int argc, char ** argv){
 	TOTAL_MODULE = total_module(module_arr);
 	TOTAL_NET = total_net(net_arr) ;
 	solution = initialize_solution( module_arr);
+	iter_update_module(0, 0, solution, module_arr);
 	print_module(module_arr);
 	print_net(net_arr);
 	return 0;
