@@ -1,15 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <math.h>
+#include <math.h>
 
 #define MODULE_LIMIT 500
 #define NET_LIMIT 500
 #define TOTAL_WIDTH 100
 #define TOTAL_HEIGHT 100
 
-int TOTAL_MODULE  = 0;
-int TOTAL_NET = 0;
+#define AREA 1
+#define RATIO 10
+#define SEMI 3
+#define PIO 6
+
+int TOTAL_MODULES  = 0;
+int TOTAL_NETS = 0;
 
 enum read_module_file_state{
 	module_index = 0,
@@ -77,7 +82,7 @@ FPTREE * construct_tree (FPTREE * left, FPTREE * right, char operator){
 FPTREE * iter_construct_tree_V(int i , FPTREE * left, FPTREE * right, MODULE *  module_arr ){
 	int k , l ;
 	if(left == NULL && right == NULL){
-		if(i == TOTAL_MODULE ){
+		if(i == TOTAL_MODULES ){
 			FPTREE * temp = malloc(sizeof(FPTREE));
 			temp->left= temp->right = NULL ;
 			temp->width = module_arr[i].x_width ;
@@ -88,7 +93,7 @@ FPTREE * iter_construct_tree_V(int i , FPTREE * left, FPTREE * right, MODULE *  
 			}else{
 				return NULL ;
 			}
-		}else {if(i > TOTAL_MODULE){
+		}else {if(i > TOTAL_MODULES){
 			return NULL ;
 		}else{
 			k = i; l = k + 1;
@@ -111,7 +116,7 @@ FPTREE * iter_construct_tree_V(int i , FPTREE * left, FPTREE * right, MODULE *  
 			return NULL ;
 		}}
 	}else{if(left != NULL && right == NULL){
-		if(i > TOTAL_MODULE){
+		if(i > TOTAL_MODULES){
 			return left;
 		}else{
 			FPTREE * right = malloc(sizeof(FPTREE));
@@ -170,8 +175,37 @@ int iter_update_module(int x, int y, FPTREE * node, MODULE * module_arr){
 		break;
 	}
 }
-int solution_cost(FPTREE * solution, MODULE * module_arr){
-	
+long solution_cost(FPTREE * solution,  NET * net_arr,  MODULE * module_arr){
+	int area = solution->width * solution ->height ;
+	int ratio = abs(solution->width - solution->height) / (solution->width > solution->height ? solution->width : solution->height);
+	int i , semip = 0, pioleng = 0;
+	for(i = 1; i <= TOTAL_NETS; i ++){
+		int j , mxx = 0, mxy = 0, minx = TOTAL_WIDTH, miny = TOTAL_HEIGHT;
+		for ( j = 0; j < net_arr[i].module_count; j++){
+			if(module_arr[net_arr[i].module_list[j]].x_coordinate < minx){
+				minx = module_arr[net_arr[i].module_list[j]].x_coordinate ;
+			}
+			if(module_arr[net_arr[i].module_list[j]].x_coordinate > mxx){
+				mxx = module_arr[net_arr[i].module_list[j]].x_coordinate ;
+			}
+			if(module_arr[net_arr[i].module_list[j]].y_coordinate < miny){
+				miny = module_arr[net_arr[i].module_list[j]].y_coordinate ;
+			}
+			if(module_arr[net_arr[i].module_list[j]].y_coordinate > mxy){
+				mxy = module_arr[net_arr[i].module_list[j]].y_coordinate ;
+			}
+		}
+		semip += mxx - minx + mxy - miny ;
+		printf("net %d: minx: %d miny: %d maxx: %d maxy: %d\n", i, minx, miny, mxx, mxy );
+	}
+	for(i = 1; i <= TOTAL_MODULES ; i ++){
+		if(module_arr[i].pio){
+			pioleng += module_arr[i].x_coordinate + module_arr[i].y_coordinate ;
+		}
+	}
+	printf("semi: %d\npioleng: %d\n", semip , pioleng);
+	printf("COST: %d\n", AREA * area + RATIO * ratio + SEMI * semip + PIO * pioleng) ;
+	return AREA * area + RATIO * ratio + SEMI * semip + PIO * pioleng ;
 }
 int main(int argc, char ** argv){
 	int i = 1;
@@ -236,10 +270,12 @@ int main(int argc, char ** argv){
 	read_module_file(moduleFile);
 	read_pio_file(pioFile);
 	read_net_file(netFile);
-	TOTAL_MODULE = total_module(module_arr);
-	TOTAL_NET = total_net(net_arr) ;
+	TOTAL_MODULES = total_module(module_arr);
+	TOTAL_NETS = total_net(net_arr) ;
 	solution = initialize_solution( module_arr);
+	printf("area: %d x %d = %d\n", solution->width, solution->height, solution->width * solution->height) ;
 	iter_update_module(0, 0, solution, module_arr);
+	solution_cost(solution, net_arr, module_arr);
 	print_module(module_arr);
 	print_net(net_arr);
 	return 0;
@@ -249,7 +285,7 @@ int main(int argc, char ** argv){
  */
 int print_module(MODULE * module_arr){
 	int i;
-	printf("total_module: %d\n", TOTAL_MODULE);
+	printf("total_module: %d\n", TOTAL_MODULES);
 	for(i = 0; i < MODULE_LIMIT; i++){
 		if(module_arr[i].x_width == 0){continue;}
 		printf("[%d] x:%d y:%d xw:%d yw:%d pio:%s\n", i, module_arr[i].x_coordinate, module_arr[i].y_coordinate, module_arr[i].x_width, module_arr[i].y_width, module_arr[i].pio ? "yes" : "no");
@@ -381,6 +417,7 @@ int total_net(NET * net_arr){
  */
 int print_net(NET * net_arr){
 	int i;
+	printf("total_net: %d\n", total_net(net_arr));
 	for(i = 0; i < NET_LIMIT; i++){
 		if(net_arr[i].module_count == 0){continue;}
 		printf("[%d](%d) \n", i, net_arr[i].module_count);
