@@ -258,7 +258,7 @@ void print_list(FPTREE ** list){
 	putchar('\n');
 }
 int transition(FPTREE * solution, int tst_type){
-	int i = random_int ();
+	int i = random_int(1,99);
 	switch(tst_type){
 	case SWAP_OPERATOR:
 	
