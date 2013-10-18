@@ -4,6 +4,7 @@
 #include <math.h>
 
 #define MODULE_LIMIT 500
+#define OPERATOR_LIMIT 1000
 #define NET_LIMIT 500
 #define TOTAL_WIDTH 100
 #define TOTAL_HEIGHT 100
@@ -52,6 +53,8 @@ struct fptreenode{
 typedef struct fptreenode FPTREE ;
 
 FPTREE  * solution ;
+FPTREE * operators[OPERATOR_LIMIT];
+FPTREE * operants[MODULE_LIMIT];
 
 MODULE module_arr[MODULE_LIMIT];
 NET net_arr[NET_LIMIT];
@@ -206,6 +209,33 @@ long solution_cost(FPTREE * solution,  NET * net_arr,  MODULE * module_arr){
 	printf("semi: %d\npioleng: %d\n", semip , pioleng);
 	printf("COST: %d\n", AREA * area + RATIO * ratio + SEMI * semip + PIO * pioleng) ;
 	return AREA * area + RATIO * ratio + SEMI * semip + PIO * pioleng ;
+}
+void  traverse_operator_list(FPTREE * node){
+	static int operator_index = 0;
+	static int operant_index = 0;
+	if(node->operator == 'V' || node->operator == 'H'){
+		operators[operator_index] = node ;
+		operator_index += 1; 
+	}else{
+		
+		return ;
+	}
+	traverse_operator_list(node->left);
+	traverse_operator_list(node->right);
+}
+void print_operator_list(FPTREE ** operator_list){
+	int i;
+	for(i = 0; i <OPERATOR_LIMIT; i++){
+		if(operator_list[i] == NULL){
+			break;
+		}else{
+			printf("%c", operator_list[i]->operator);
+		}
+	}
+	putchar('\n');
+}
+int transition(FPTREE * solution, int tst_type){
+	
 }
 int main(int argc, char ** argv){
 	int i = 1;
