@@ -24,7 +24,11 @@ enum read_module_file_state{
 	x_width,
 	y_width
 };
-
+enum transition_type{
+	SWAP_OPERATOR = 0,
+	FLIP  ,
+	SWAP_OPERANT
+};
 struct module{
 	int module_index;
 	int x_coordinate ;
@@ -48,7 +52,6 @@ struct fptreenode{
 	int height ;
 	struct fptreenode * left ; 
 	struct fptreenode * right ;
-//	struct fptreenode * parent ;
 };
 typedef struct fptreenode FPTREE ;
 
@@ -178,6 +181,21 @@ int iter_update_module(int x, int y, FPTREE * node, MODULE * module_arr){
 		break;
 	}
 }
+void iter_update_tree(FPTREE * node){
+	if(node->operator == 0){
+		return ;
+	}else{
+		iter_update_tree(node->left);
+		iter_update_tree(node->right);
+		if(node->operator == 'V'){
+			node->width = node->left->width + node->right->width ;
+			node->height = node->left->height > node->right->height ? node->left->height :node->right->height ;
+		}else{ if(node->operator == 'H'){
+			node->height = node->left->height + node->right->height ;
+			node->width = node->left->width > node->right->width ? node->left->width :node->right->width ;
+		}}
+	}
+}
 long solution_cost(FPTREE * solution,  NET * net_arr,  MODULE * module_arr){
 	int area = solution->width * solution ->height ;
 	int ratio = abs(solution->width - solution->height) / (solution->width > solution->height ? solution->width : solution->height);
@@ -240,7 +258,19 @@ void print_list(FPTREE ** list){
 	putchar('\n');
 }
 int transition(FPTREE * solution, int tst_type){
+	int i = random_int ();
+	switch(tst_type){
+	case SWAP_OPERATOR:
 	
+	break;
+
+	case SWAP_OPERANT:
+	break;
+	
+	case FLIP:
+	
+	break;
+	}
 }
 int main(int argc, char ** argv){
 	int i = 1;
