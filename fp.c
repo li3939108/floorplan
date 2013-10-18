@@ -217,19 +217,24 @@ void  traverse_operator_list(FPTREE * node){
 		operators[operator_index] = node ;
 		operator_index += 1; 
 	}else{
-		
+		operants[operant_index] = node ;
+		operant_index += 1;
 		return ;
 	}
 	traverse_operator_list(node->left);
 	traverse_operator_list(node->right);
 }
-void print_operator_list(FPTREE ** operator_list){
+void print_list(FPTREE ** list){
 	int i;
 	for(i = 0; i <OPERATOR_LIMIT; i++){
-		if(operator_list[i] == NULL){
+		if(list[i] == NULL){
 			break;
 		}else{
-			printf("%c", operator_list[i]->operator);
+			if(list[i]->operator != 0){
+				printf("%c", list[i]->operator);
+			}else{
+				printf("%d ", list[i]->node_number);
+			}
 		}
 	}
 	putchar('\n');
@@ -306,6 +311,9 @@ int main(int argc, char ** argv){
 	printf("area: %d x %d = %d\n", solution->width, solution->height, solution->width * solution->height) ;
 	iter_update_module(0, 0, solution, module_arr);
 	solution_cost(solution, net_arr, module_arr);
+	traverse_operator_list(solution);
+	print_list(operators);
+	print_list(operants);
 	print_module(module_arr);
 	print_net(net_arr);
 	return 0;
