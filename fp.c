@@ -3,6 +3,8 @@
 #include <string.h>
 #include <math.h>
 
+#define __FP_H__
+
 #define MODULE_LIMIT 500
 #define OPERATOR_LIMIT 1000
 #define NET_LIMIT 500
@@ -63,6 +65,9 @@ MODULE module_arr[MODULE_LIMIT];
 NET net_arr[NET_LIMIT];
 
 FPTREE * iter_construct_tree_H(int i,FPTREE * left, FPTREE * right, MODULE * module_arr);
+long solution_cost(FPTREE * solution,  NET * net_arr,  MODULE * module_arr);
+
+
 
 
 FPTREE * initialize_solution( MODULE * module_arr){
@@ -257,8 +262,8 @@ void print_list(FPTREE ** list){
 	}
 	putchar('\n');
 }
-int transition(FPTREE * solution, int tst_type){
-	int i = random_int(1,99);
+int transition(FPTREE * solution, int tst_type, NET * net_arr, MODULE * module_arr, int i){
+	int initcost = solution_cost(solution, net_arr, module_arr);
 	switch(tst_type){
 	case SWAP_OPERATOR:
 	
@@ -268,7 +273,14 @@ int transition(FPTREE * solution, int tst_type){
 	break;
 	
 	case FLIP:
-	
+	if(operators[i]->operator == 'V'){
+		operators[i]->operator = 'H';
+	}else{if(operators[i]->operator == 'H'){
+		operators[i]->operator = 'V';
+	}}
+	iter_update_tree(solution);
+	iter_update_module(0, 0, solution, module_arr);
+	return solution_cost(solution, net_arr, module_arr) - initcost ;
 	break;
 	}
 }
@@ -346,6 +358,7 @@ int main(int argc, char ** argv){
 	print_list(operants);
 	print_module(module_arr);
 	print_net(net_arr);
+	anneal(solution, net_arr, module_arr);
 	return 0;
 }
 /*
