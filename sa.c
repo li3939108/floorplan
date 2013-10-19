@@ -21,9 +21,9 @@ void anneal(FPTREE * solution, NET * net_arr, MODULE * module_arr ){
 	int i1, i2;				/* pair of items to swap */
 	int i,j;				/* counters */
 	double temperature;			/* the current system temp */
-	double current_value;			/* value of current state */
-	double start_value;			/* value at start of loop */
-	double delta;				/* value after swap */
+	long current_value;			/* value of current state */
+	long start_value;			/* value at start of loop */
+	int delta;				/* value after swap */
 	double merit, flip;			/* hold swap accept conditions*/
 	double exponent;			/* exponent for energy funct*/
 	double random_float();
@@ -42,34 +42,41 @@ void anneal(FPTREE * solution, NET * net_arr, MODULE * module_arr ){
 		
 		for (j=1; j<=STEPS_PER_TEMP; j++) {
 			current_value = solution_cost(solution, net_arr, module_arr);
-			delta = transition(solution, FLIP, net_arr, module_arr);
+			int randint1 = random_int(1, 98);
+			int randint2 = random_int(1,99);
+			delta = transition(solution, FLIP, net_arr, module_arr, randint1, randint2);
+			if(solution->width > 100 || solution->height > 100){
+				transition(solution, FLIP, net_arr, module_arr, randint1, randint2);
+				continue ;
+			}
 
 			flip = random_float(0,1);
-			exponent = (-delta/current_value)/(K*temperature);
+			exponent = (-delta/(current_value + 0.0))/(K * temperature);
 			merit = pow(E,exponent);
 			/*printf("merit = %f  flip=%f  exponent=%f\n",merit,flip,exponent); */
 			/*if (merit >= 1.0)
-				merit = 0.0;*/ /* don't do unchanging swaps*/
+			merit = 0.0;*/ /* don't do unchanging swaps*/
 
 			if(delta < 0) {			/*ACCEPT-WIN choose a better solution*/
-				current_value = current_value+delta;
-/*
-					if (TRACE_OUTPUT) {
-					printf("swap WIN %d--%d value %f  temp=%f i=%d j=%d\n",
-					i1,i2,current_value,temperature,i,j);
-				}*/
+				current_value = current_value + delta;
+				if (TRACE_OUTPUT) {
+					fprintf(stderr, "swap WIN %d %d value %ld  temp=%f \n",
+					randint1, randint2, current_value,temperature);
+					solution_cost(solution,net_arr, module_arr);
+					printf("\n\n");
+				}
 			}else{if(merit > flip){ 		/*ACCEPT-LOSS choose a worse solution*/
 				current_value = current_value+delta;
-/*
 				if (TRACE_OUTPUT) {
-					printf("swap LOSS %d--%d value %f merit=%f flip=%f i=%d j=%d\n",
-					i1,i2,current_value,merit,flip,i,j);
+					fprintf(stderr, "swap LOSS %d %d value %ld merit=%f flip=%f\n",
+					randint1, randint2, current_value, merit, flip) ;
+					solution_cost(solution,net_arr, module_arr) ;
+					printf("\n\n") ;
 				}
-*/
 			}else{ 				/* REJECT */
-			      transition(solution, FLIP, net_arr, module_arr);
+			      transition(solution, FLIP, net_arr, module_arr, randint1, randint2) ;
 			}}
-			solution_count_update(solution, net_arr, module_arr);
+			solution_count_update(solution, net_arr, module_arr) ;
 		}
 		if((current_value-start_value) < 0.0){ /* rerun at this temp */
 			temperature /= COOLING_FRACTION;

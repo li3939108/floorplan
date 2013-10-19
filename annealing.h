@@ -14,7 +14,7 @@
 #include <stdlib.h>
 
 
-#define TRACE_OUTPUT	FALSE		/* print the swaps as they happen */
+#define TRACE_OUTPUT	TRUE		/* print the swaps as they happen */
 
 #define PRINT_FREQUENCY 10000             /* how often we report progress */
 
@@ -31,21 +31,21 @@
 #define	INITIAL_TEMPERATURE	1	/* start temperature -- probably
 					   leave intact */
 
-#define COOLING_STEPS		10000	/* how many times do we cool -- make
+#define COOLING_STEPS		100	/* how many times do we cool -- make
 					   higher to improve quality, lower to
 					   speed the program up.  Move in
 					   tandem with the COOLING_FRACTION */
 
-#define COOLING_FRACTION	0.7	/* how much to cool each time -- make
+#define COOLING_FRACTION	0.6	/* how much to cool each time -- make
 					   higher to improve quality, lower to
 					   speed the program up. */
 
-#define STEPS_PER_TEMP		1000	/* lower makes it faster, higher makes
+#define STEPS_PER_TEMP		100	/* lower makes it faster, higher makes
 					   it potentially better. */
 
 #define E			2.718	/* number e -- probably leave intact*/
 
-#define K			0.1	/* problem specific Boltzman's constant
+#define K			0.01	/* problem specific Boltzman's constant
 					   May have to adjust if your global
 					   value function changes the sizes
 					   of the numbers it produces.  It is

@@ -68,11 +68,10 @@ FPTREE * iter_construct_tree_H(int i,FPTREE * left, FPTREE * right, MODULE * mod
 long solution_cost(FPTREE * solution,  NET * net_arr,  MODULE * module_arr);
 
 
-
-
 FPTREE * initialize_solution( MODULE * module_arr){
 	return iter_construct_tree_H(1, NULL, NULL, module_arr) ;
 }
+
 FPTREE * construct_tree (FPTREE * left, FPTREE * right, char operator){
 	FPTREE * parent = malloc ( sizeof(FPTREE));
 	parent->left = left ;
@@ -90,6 +89,7 @@ FPTREE * construct_tree (FPTREE * left, FPTREE * right, char operator){
 	}}
 	return parent ;
 }
+
 FPTREE * iter_construct_tree_V(int i , FPTREE * left, FPTREE * right, MODULE *  module_arr ){
 	int k , l ;
 	if(left == NULL && right == NULL){
@@ -144,6 +144,7 @@ FPTREE * iter_construct_tree_V(int i , FPTREE * left, FPTREE * right, MODULE *  
 		}
 	}}
 }
+
 FPTREE * iter_construct_tree_H(int i, FPTREE * left, FPTREE * right, MODULE * module_arr){
 	if(left == NULL && right == NULL){
 		left = iter_construct_tree_V(i, NULL, NULL, module_arr);
@@ -201,6 +202,7 @@ void iter_update_tree(FPTREE * node){
 		}}
 	}
 }
+
 long solution_cost(FPTREE * solution,  NET * net_arr,  MODULE * module_arr){
 	int area = solution->width * solution ->height ;
 	int ratio = abs(solution->width - solution->height) / (solution->width > solution->height ? solution->width : solution->height);
@@ -262,21 +264,27 @@ void print_list(FPTREE ** list){
 	}
 	putchar('\n');
 }
-int transition(FPTREE * solution, int tst_type, NET * net_arr, MODULE * module_arr, int i){
+int transition(FPTREE * solution, int tst_type, NET * net_arr, MODULE * module_arr, int i1, int i2){
 	int initcost = solution_cost(solution, net_arr, module_arr);
+	int temp ;
 	switch(tst_type){
 	case SWAP_OPERATOR:
 	
 	break;
 
 	case SWAP_OPERANT:
+	temp = operants[i2]->node_number ;
+	operants[i2]->node_number = operants[i1]->node_number ;
+	operants[i1]->node_number = temp ;
+	iter_update_tree(solution);
+	iter_update_module(0,0,solution, module_arr);
 	break;
 	
 	case FLIP:
-	if(operators[i]->operator == 'V'){
-		operators[i]->operator = 'H';
-	}else{if(operators[i]->operator == 'H'){
-		operators[i]->operator = 'V';
+	if(operators[i1]->operator == 'V'){
+		operators[i1]->operator = 'H';
+	}else{if(operators[i1]->operator == 'H'){
+		operators[i1]->operator = 'V';
 	}}
 	iter_update_tree(solution);
 	iter_update_module(0, 0, solution, module_arr);
