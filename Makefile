@@ -1,3 +1,3 @@
 cc=gcc
 fp : fp.c random.c sa.c 
-	$(cc) -g -lm $+ -o $@
+	$(cc) -g $+ -o -lm $@

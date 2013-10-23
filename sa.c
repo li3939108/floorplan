@@ -1,3 +1,4 @@
+#include <math.h>
 #include "annealing.h"			/* type declarations for SA */
 #include "bool.h"
 
@@ -44,6 +45,7 @@ void anneal(FPTREE * solution, NET * net_arr, MODULE * module_arr ){
 			current_value = solution_cost(solution, net_arr, module_arr);
 			int randint1 = random_int(1, 98);
 			int randint2 = random_int(1,99);
+			int tst = random_int(1,2);
 			delta = transition(solution, FLIP, net_arr, module_arr, randint1, randint2);
 			if(solution->width > 100 || solution->height > 100){
 				transition(solution, FLIP, net_arr, module_arr, randint1, randint2);
