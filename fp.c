@@ -60,6 +60,7 @@ typedef struct fptreenode FPTREE ;
 FPTREE  * solution ;
 FPTREE * operators[OPERATOR_LIMIT];
 FPTREE * operants[MODULE_LIMIT];
+FPTREE  * nodes[3*OPERATOR_LIMIT];
 
 MODULE module_arr[MODULE_LIMIT];
 NET net_arr[NET_LIMIT];
@@ -231,7 +232,7 @@ long solution_cost(FPTREE * solution,  NET * net_arr,  MODULE * module_arr){
 			pioleng += module_arr[i].x_coordinate + module_arr[i].y_coordinate ;
 		}
 	}
-	printf("semi: %d\npioleng: %d\n", semip , pioleng);
+	printf("semi: %d\npioleng: %d\nwidth: %d\nheight: %d\n", semip , pioleng, solution->width, solution->height);
 	printf("COST: %d\n", AREA * area + RATIO * ratio + SEMI * semip + PIO * pioleng) ;
 	return AREA * area + RATIO * ratio + SEMI * semip + PIO * pioleng ;
 }
@@ -249,6 +250,39 @@ void  traverse_operator_list(FPTREE * node){
 	traverse_operator_list(node->left);
 	traverse_operator_list(node->right);
 }
+void traverse_list(FPTREE * node){
+	static int index = 0;
+	if(node->operator == 0){
+		nodes[index] = node ;
+		index += 1;
+		return ;
+	}
+	traverse_list(node->left);
+	traverse_list(node->right);
+	nodes[index] = node ;
+	index += 1;
+	return ;
+}
+FPTREE * list2tree(FPTREE * nodes[]){
+	FPTREE * stack [3* MODULE_LIMIT] ;
+	int i = 0;
+	int stack_index = 0;
+	for(i = 0; i < 3 * MODULE_LIMIT; i++){
+		if(nodes[i] != NULL){
+			if(nodes[i]->operator == 0){
+				stack[stack_index] = nodes[i] ;
+				stack_index += 1 ;
+			}else{
+				nodes[i]->right = stack[stack_index - 1] ;
+				nodes[i]->left = stack[stack_index - 2];
+				stack[stack_index - 2] = nodes[i];
+				stack_index -= 1;
+			}
+		}else{
+			return stack[0] ;
+		}
+	}
+}
 void print_list(FPTREE ** list){
 	int i;
 	for(i = 0; i <OPERATOR_LIMIT; i++){
@@ -256,7 +290,7 @@ void print_list(FPTREE ** list){
 			break;
 		}else{
 			if(list[i]->operator != 0){
-				printf("%c", list[i]->operator);
+				printf("%c ", list[i]->operator);
 			}else{
 				printf("%d ", list[i]->node_number);
 			}
@@ -278,6 +312,7 @@ int transition(FPTREE * solution, int tst_type, NET * net_arr, MODULE * module_a
 	operants[i1]->node_number = temp ;
 	iter_update_tree(solution);
 	iter_update_module(0,0,solution, module_arr);
+	return solution_cost(solution, net_arr, module_arr) - initcost ;
 	break;
 	
 	case FLIP:
@@ -299,6 +334,7 @@ int main(int argc, char ** argv){
 		*pioFile = NULL;
 	memset( module_arr, 0, sizeof(MODULE) * MODULE_LIMIT); 
 	memset( net_arr, 0, sizeof(NET) * NET_LIMIT); 
+	memset( nodes, 0, sizeof(FPTREE *) * 3 * OPERATOR_LIMIT);
 	/*
 	 * Read parameters from terminal
 	 */
@@ -362,8 +398,12 @@ int main(int argc, char ** argv){
 	iter_update_module(0, 0, solution, module_arr);
 	solution_cost(solution, net_arr, module_arr);
 	traverse_operator_list(solution);
-	print_list(operators);
-	print_list(operants);
+	traverse_list(solution);
+	//print_list(operators);
+	//print_list(operants);
+	//print_list(nodes);
+	//traverse_list(list2tree(nodes));
+	//print_list(nodes);
 	print_module(module_arr);
 	print_net(net_arr);
 	anneal(solution, net_arr, module_arr);
