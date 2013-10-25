@@ -67,6 +67,7 @@ NET net_arr[NET_LIMIT];
 
 FPTREE * iter_construct_tree_H(int i,FPTREE * left, FPTREE * right, MODULE * module_arr);
 long solution_cost(FPTREE * solution,  NET * net_arr,  MODULE * module_arr);
+extern anneal(NET * net_arr, MODULE * module_arr) ;
 
 
 FPTREE * initialize_solution( MODULE * module_arr){
@@ -206,7 +207,7 @@ void iter_update_tree(FPTREE * node){
 
 long solution_cost(FPTREE * solution,  NET * net_arr,  MODULE * module_arr){
 	int area = solution->width * solution ->height ;
-	int ratio = abs(solution->width - solution->height) / (solution->width > solution->height ? solution->width : solution->height);
+	float ratio = (0.0 + abs(solution->width - solution->height)) / (solution->width > solution->height ? solution->width : solution->height);
 	int i , semip = 0, pioleng = 0;
 	for(i = 1; i <= TOTAL_NETS; i ++){
 		int j , mxx = 0, mxy = 0, minx = TOTAL_WIDTH, miny = TOTAL_HEIGHT;
@@ -232,9 +233,9 @@ long solution_cost(FPTREE * solution,  NET * net_arr,  MODULE * module_arr){
 			pioleng += module_arr[i].x_coordinate + module_arr[i].y_coordinate ;
 		}
 	}
-	printf("semi: %d\npioleng: %d\nwidth: %d\nheight: %d\n", semip , pioleng, solution->width, solution->height);
-	printf("COST: %d\n", AREA * area + RATIO * ratio + SEMI * semip + PIO * pioleng) ;
-	return AREA * area + RATIO * ratio + SEMI * semip + PIO * pioleng ;
+//	printf("semi: %d\npioleng: %d\nwidth: %d\nheight: %d\n", semip , pioleng, solution->width, solution->height);
+//	printf("COST: %d\n", AREA * area + RATIO * ratio + SEMI * semip + PIO * pioleng) ;
+	return AREA * area + (int)(RATIO * ratio) + SEMI * semip + PIO * pioleng ;
 }
 void  traverse_operator_list(FPTREE * node){
 	static int operator_index = 0;
@@ -298,13 +299,14 @@ void print_list(FPTREE ** list){
 	}
 	putchar('\n');
 }
-int transition(FPTREE * solution, NET * net_arr, MODULE * module_arr, int i1){
+int transition(NET * net_arr, MODULE * module_arr, int i1){
 	int initcost = solution_cost(solution, net_arr, module_arr);
+	int type ;
 	FPTREE * temp ;
 	if(nodes[i1]->operator == 'V' || nodes[i1]->operator == 'H'){
 		int i ;
 		for(i = i1; ; i--){
-			if(nodes[i]->operator == 0){
+			if(nodes[i] == NULL || nodes[i]->operator == 0){
 				break;
 			}else{
 				if(nodes[i]->operator == 'H'){
@@ -315,7 +317,7 @@ int transition(FPTREE * solution, NET * net_arr, MODULE * module_arr, int i1){
 			}
 		}
 		for(i = i1; ; i++){
-			if(nodes[i]->operator == 0){
+			if(nodes[i] == NULL || nodes[i]->operator == 0){
 				break;
 			}else{
 				if(nodes[i]->operator == 'H'){
@@ -325,13 +327,14 @@ int transition(FPTREE * solution, NET * net_arr, MODULE * module_arr, int i1){
 				}}
 			}
 		}
+		type = 0 ;
 	}else{if(nodes[i1]->operator == 0){
 		int i , operant_count = 0, operator_count = 0;
 		temp = nodes[i1] ;
 		nodes[i1] = nodes[i1 + 1] ;
 		nodes[i1 + 1] = temp ;
 		for(i = i1; i >= 0; i--){
-			if(nodes[i]->operator == 0){
+			if(nodes[i] == NULL || nodes[i]->operator == 0){
 				operant_count += 1;
 			}else{
 				operator_count += 1;
@@ -343,12 +346,49 @@ int transition(FPTREE * solution, NET * net_arr, MODULE * module_arr, int i1){
 			nodes[i1] = temp ;
 			return 0;
 		}
+		type = 1;
 	}}
 	solution = list2tree(nodes);
 	iter_update_tree(solution);
 	iter_update_module(0, 0, solution, module_arr);
-	return solution_cost(solution, net_arr, module_arr) - initcost ;
-
+	if(solution->width <= 100 && solution->height <= 100){
+		return solution_cost(solution, net_arr, module_arr) - initcost ;
+	}else{
+		if(type == 0){
+			int i ;
+			for(i = i1; ; i--){
+				if(nodes[i] == NULL || nodes[i]->operator == 0){
+					break;
+				}else{
+					if(nodes[i]->operator == 'H'){
+						nodes[i]->operator = 'V';
+					}else{if(nodes[i]->operator == 'V'){
+						nodes[i]->operator = 'H';
+					}}
+				}
+			}
+			for(i = i1; ; i++){
+				if(nodes[i] == NULL || nodes[i]->operator == 0){
+					break;
+				}else{
+					if(nodes[i]->operator == 'H'){
+						nodes[i]->operator = 'V';
+					}else{if(nodes[i]->operator == 'V'){
+						nodes[i]->operator = 'H';
+					}}
+				}
+			}
+		}else{if(type == 1){
+			FPTREE * temp ;
+			temp = nodes[i1] ;
+			nodes[i1 ] = nodes[i1 + 1] ;
+			nodes[i1 + 1] = temp ;
+		}}
+		solution = list2tree(nodes);
+		iter_update_tree(solution);
+		iter_update_module(0,0,solution, module_arr);
+		return 0;
+	}
 }
 int main(int argc, char ** argv){
 	int i = 1;
@@ -429,7 +469,7 @@ int main(int argc, char ** argv){
 	//print_list(nodes);
 	print_module(module_arr);
 	print_net(net_arr);
-	anneal(solution, net_arr, module_arr);
+	anneal( net_arr, module_arr);
 	return 0;
 }
 /*

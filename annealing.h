@@ -31,12 +31,12 @@
 #define	INITIAL_TEMPERATURE	1	/* start temperature -- probably
 					   leave intact */
 
-#define COOLING_STEPS		100	/* how many times do we cool -- make
+#define COOLING_STEPS		1000	/* how many times do we cool -- make
 					   higher to improve quality, lower to
 					   speed the program up.  Move in
 					   tandem with the COOLING_FRACTION */
 
-#define COOLING_FRACTION	0.6	/* how much to cool each time -- make
+#define COOLING_FRACTION	0.9	/* how much to cool each time -- make
 					   higher to improve quality, lower to
 					   speed the program up. */
 
@@ -45,7 +45,7 @@
 
 #define E			2.718	/* number e -- probably leave intact*/
 
-#define K			0.01	/* problem specific Boltzman's constant
+#define K			0.0001	/* problem specific Boltzman's constant
 					   May have to adjust if your global
 					   value function changes the sizes
 					   of the numbers it produces.  It is

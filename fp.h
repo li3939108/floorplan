@@ -57,12 +57,14 @@ typedef struct fptreenode FPTREE ;
 extern FPTREE  * solution ;
 extern FPTREE * operators[OPERATOR_LIMIT];
 extern FPTREE * operants[MODULE_LIMIT];
+extern FPTREE * nodes[3 * OPERATOR_LIMIT];
 
 extern MODULE module_arr[MODULE_LIMIT];
 extern NET net_arr[NET_LIMIT];
 
 extern FPTREE * iter_construct_tree_H(int i,FPTREE * left, FPTREE * right, MODULE * module_arr);
 extern long solution_cost(FPTREE * solution,  NET * net_arr,  MODULE * module_arr);
-extern int transition(FPTREE * solution, NET* net_arr, MODULE * module_arr, int i1);
+extern int transition( NET* net_arr, MODULE * module_arr, int i1);
+extern FPTREE * list2tree(FPTREE * nodes[]);
 
 #endif
