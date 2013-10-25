@@ -48,7 +48,10 @@ void anneal(FPTREE * solution, NET * net_arr, MODULE * module_arr ){
 //			int tst = random_int(1,2);
 			delta = transition(solution,  net_arr, module_arr, randint1 );
 			if(solution->width > 100 || solution->height > 100){
+				/* 
+				 * revert
 				transition(solution,  net_arr, module_arr, randint1);
+				*/
 				continue ;
 			}
 
@@ -76,7 +79,10 @@ void anneal(FPTREE * solution, NET * net_arr, MODULE * module_arr ){
 					printf("\n\n") ;
 				}
 			}else{ 				/* REJECT */
-			      transition(solution,  net_arr, module_arr, randint1 ) ;
+				/* 
+				 * revert
+			      transition(solution,  net_arr, module_arr, randint1) ;
+				*/
 			}}
 			solution_count_update(solution, net_arr, module_arr) ;
 		}
