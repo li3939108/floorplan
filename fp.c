@@ -298,34 +298,57 @@ void print_list(FPTREE ** list){
 	}
 	putchar('\n');
 }
-int transition(FPTREE * solution, int tst_type, NET * net_arr, MODULE * module_arr, int i1, int i2){
+int transition(FPTREE * solution, NET * net_arr, MODULE * module_arr, int i1){
 	int initcost = solution_cost(solution, net_arr, module_arr);
-	int temp ;
-	switch(tst_type){
-	case SWAP_OPERATOR:
-	
-	break;
-
-	case SWAP_OPERANT:
-	temp = operants[i2]->node_number ;
-	operants[i2]->node_number = operants[i1]->node_number ;
-	operants[i1]->node_number = temp ;
-	iter_update_tree(solution);
-	iter_update_module(0,0,solution, module_arr);
-	return solution_cost(solution, net_arr, module_arr) - initcost ;
-	break;
-	
-	case FLIP:
-	if(operators[i1]->operator == 'V'){
-		operators[i1]->operator = 'H';
-	}else{if(operators[i1]->operator == 'H'){
-		operators[i1]->operator = 'V';
+	FPTREE * temp ;
+	if(nodes[i1]->operator == 'V' || nodes[i1]->operator == 'H'){
+		int i ;
+		for(i = i1; ; i--){
+			if(nodes[i]->operator == 0){
+				break;
+			}else{
+				if(nodes[i]->operator == 'H'){
+					nodes[i]->operator = 'V';
+				}else{if(nodes[i]->operator == 'V'){
+					nodes[i]->operator = 'H';
+				}}
+			}
+		}
+		for(i = i1; ; i++){
+			if(nodes[i]->operator == 0){
+				break;
+			}else{
+				if(nodes[i]->operator == 'H'){
+					nodes[i]->operator = 'V';
+				}else{if(nodes[i]->operator == 'V'){
+					nodes[i]->operator = 'H';
+				}}
+			}
+		}
+	}else{if(nodes[i1]->operator == 0){
+		int i , operant_count = 0, operator_count = 0;
+		temp = nodes[i1] ;
+		nodes[i1] = nodes[i1 + 1] ;
+		nodes[i1 + 1] = temp ;
+		for(i = i1; i >= 0; i--){
+			if(nodes[i]->operator == 0){
+				operant_count += 1;
+			}else{
+				operator_count += 1;
+			}
+		}
+		if( operator_count < operant_count && (i1 == 0 || nodes[i1 - 1]->operator != nodes[i1]->operator )){//legal normalized polish expression
+		}else{
+			nodes[i1 + 1] = nodes[i1];
+			nodes[i1] = temp ;
+			return 0;
+		}
 	}}
+	list2tree(nodes);
 	iter_update_tree(solution);
 	iter_update_module(0, 0, solution, module_arr);
 	return solution_cost(solution, net_arr, module_arr) - initcost ;
-	break;
-	}
+
 }
 int main(int argc, char ** argv){
 	int i = 1;
