@@ -63,5 +63,6 @@ extern NET net_arr[NET_LIMIT];
 
 extern FPTREE * iter_construct_tree_H(int i,FPTREE * left, FPTREE * right, MODULE * module_arr);
 extern long solution_cost(FPTREE * solution,  NET * net_arr,  MODULE * module_arr);
+extern int transition(FPTREE * solution, NET* net_arr, MODULE * module_arr, int i1);
 
 #endif

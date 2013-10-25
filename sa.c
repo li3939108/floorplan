@@ -44,11 +44,11 @@ void anneal(FPTREE * solution, NET * net_arr, MODULE * module_arr ){
 		for (j=1; j<=STEPS_PER_TEMP; j++) {
 			current_value = solution_cost(solution, net_arr, module_arr);
 			int randint1 = random_int(1, 98);
-			int randint2 = random_int(1,99);
-			int tst = random_int(1,2);
-			delta = transition(solution, FLIP, net_arr, module_arr, randint1, randint2);
+//			int randint2 = random_int(1,99);
+//			int tst = random_int(1,2);
+			delta = transition(solution,  net_arr, module_arr, randint1 );
 			if(solution->width > 100 || solution->height > 100){
-				transition(solution, FLIP, net_arr, module_arr, randint1, randint2);
+				transition(solution,  net_arr, module_arr, randint1);
 				continue ;
 			}
 
@@ -62,21 +62,21 @@ void anneal(FPTREE * solution, NET * net_arr, MODULE * module_arr ){
 			if(delta < 0) {			/*ACCEPT-WIN choose a better solution*/
 				current_value = current_value + delta;
 				if (TRACE_OUTPUT) {
-					fprintf(stderr, "swap WIN %d %d value %ld  temp=%f \n",
-					randint1, randint2, current_value,temperature);
+					fprintf(stderr, "swap WIN %d value %ld  temp=%f \n",
+					randint1, current_value,temperature);
 					solution_cost(solution,net_arr, module_arr);
 					printf("\n\n");
 				}
 			}else{if(merit > flip){ 		/*ACCEPT-LOSS choose a worse solution*/
 				current_value = current_value+delta;
 				if (TRACE_OUTPUT) {
-					fprintf(stderr, "swap LOSS %d %d value %ld merit=%f flip=%f\n",
-					randint1, randint2, current_value, merit, flip) ;
+					fprintf(stderr, "swap LOSS %d value %ld merit=%f flip=%f\n",
+					randint1, current_value, merit, flip) ;
 					solution_cost(solution,net_arr, module_arr) ;
 					printf("\n\n") ;
 				}
 			}else{ 				/* REJECT */
-			      transition(solution, FLIP, net_arr, module_arr, randint1, randint2) ;
+			      transition(solution,  net_arr, module_arr, randint1 ) ;
 			}}
 			solution_count_update(solution, net_arr, module_arr) ;
 		}

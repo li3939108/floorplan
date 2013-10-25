@@ -344,7 +344,7 @@ int transition(FPTREE * solution, NET * net_arr, MODULE * module_arr, int i1){
 			return 0;
 		}
 	}}
-	list2tree(nodes);
+	solution = list2tree(nodes);
 	iter_update_tree(solution);
 	iter_update_module(0, 0, solution, module_arr);
 	return solution_cost(solution, net_arr, module_arr) - initcost ;
