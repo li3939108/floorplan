@@ -1,3 +1,6 @@
+/*
+ * Adapted from Steven Skiena's annealing program for Traveling Sales Man problem
+ */
 #include <math.h>
 #include <string.h>
 #include "annealing.h"			/* type declarations for SA */
