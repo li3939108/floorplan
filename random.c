@@ -77,23 +77,7 @@ int *a,*b;
 }
 
 
-double random_float(low,high)
-int low,high;                                   /*lower/upper bounds on numb*/
+double random_float(float low,float high)
 {
-        int rand();
-        double i,j;                             /* avoid arithmetic trouble */
-        double r;                                  /*random number*/
-
-        i = RAND_MAX / (high-low);
-        i *= (high-low);
-        while ((j = rand()) >=i) continue;
-        r = (j/i) * (high-low) + low;
-
-        if ((r < low) || (r > high))
-                printf("ERROR: random real %f out of range [%d,%d]\n",
-                        r,low,high);
-
-        return(r);
-
+	return rand()/(RAND_MAX - 1.0) ;
 }
-

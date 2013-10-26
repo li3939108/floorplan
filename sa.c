@@ -43,25 +43,25 @@ void anneal(NET * net_arr, MODULE * module_arr ){
 		for (j=1; j<=STEPS_PER_TEMP; j++) {
 			current_value = solution_cost(solution, net_arr, module_arr);
 			fprintf(stderr, "current value: %ld\n", current_value);
-			int randint1 = random_int(0, 197);
+			int randint1 = random_int(0, 196);
 			int type = (nodes[randint1]->operator == 0 ? 1 : 0);
 			delta = transition( net_arr, module_arr, randint1 );
 //			fprintf(stderr, "delta: %d\n", delta);
-			flip = random_float(0,1);
-			exponent = (-delta/(current_value + 0.0))/(K * temperature);
+			flip = rand()/(RAND_MAX - 1.0);//random_float(0.0,1.0);
+			exponent = (-delta)/(K * temperature);
 			merit = pow(E,exponent);
 			/*printf("merit = %f  flip=%f  exponent=%f\n",merit,flip,exponent); */
 			/*if (merit >= 1.0)
 			merit = 0.0;*/ /* don't do unchanging swaps*/
 
-			if(delta <= 0) {	/*ACCEPT-WIN choose a better solution*/
+			if(delta < 0) {	/*ACCEPT-WIN choose a better solution*/
 				//current_value = current_value + delta;
 				if (TRACE_OUTPUT) {
 					fprintf(stderr, "swap WIN %d value %ld  temp=%f \n",
 					delta, solution_cost(solution,net_arr, module_arr),temperature);
 					fprintf(stderr, "\n\n");
 				}
-			}else{if(merit > flip){ 		/*ACCEPT-LOSS choose a worse solution*/
+			}else{if(merit >= flip){ 		/*ACCEPT-LOSS choose a worse solution*/
 				//current_value = current_value+delta;
 				if (TRACE_OUTPUT) {
 					fprintf(stderr, "swap LOSS %d value %ld merit=%f flip=%f\n",
