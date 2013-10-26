@@ -40,12 +40,12 @@
 					   higher to improve quality, lower to
 					   speed the program up. */
 
-#define STEPS_PER_TEMP		100	/* lower makes it faster, higher makes
+#define STEPS_PER_TEMP		1000	/* lower makes it faster, higher makes
 					   it potentially better. */
 
 #define E			2.718	/* number e -- probably leave intact*/
 
-#define K			90	/* problem specific Boltzman's constant
+#define K			100	/* problem specific Boltzman's constant
 					   May have to adjust if your global
 					   value function changes the sizes
 					   of the numbers it produces.  It is
